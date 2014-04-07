@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require File.expand_path('../../lib/trackchange', __FILE__)
+
+Trackchange::Exec.run(ARGV)
