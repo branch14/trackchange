@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
-require File.expand_path('../../lib/trackchange', __FILE__)
-
-Trackchange::Exec.run(ARGV)
+begin
+  require File.expand_path('../../lib/trackchange', __FILE__)
+  Trackchange::Exec.run(ARGV)
+rescue Exception => e
+  raise e if ENV['DEBUG']
+  warn e.message
+  exit 1
+end

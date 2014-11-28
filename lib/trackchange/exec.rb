@@ -14,6 +14,7 @@ module Trackchange
     def run
       FileUtils.mkdir_p(path) unless File.exist?(path)
       cmd = args.shift
+      raise "No command" unless cmd
       return send(cmd) if respond_to?(cmd)
       raise "Unknown command #{cmd}"
     end
