@@ -52,9 +52,9 @@ module Trackchange
         logger.info "sending notification to #{email}"
         begin
           file = Tempfile.new('changetrack')
-          file.write(result)
+          file.write "#{site}\n\n#{result}"
           file.close
-          mail = "cat #{file.path} | mail -s 'Trackchange: #{site}' #{email}"
+          mail = "cat #{file.path} | mail -s 'Change detected on #{site}' #{email}"
           logger.debug mail
           system mail
         ensure

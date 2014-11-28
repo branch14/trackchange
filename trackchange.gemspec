@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Trackchange::VERSION
   spec.authors       = ["phil"]
   spec.email         = ["phil@branch14.org"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{Track change of websites}
+  spec.summary       = %q{Track change of websites}
   spec.homepage      = ""
   spec.license       = "MIT"
 
