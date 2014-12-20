@@ -19,28 +19,31 @@ Or install it yourself as:
     $ gem install trackchange
 
 
-## Usage (CLI)
+## Usage
 
-### Probe
-
-    trackchange probe
-
-### Set email
-
+    # Set email
     trackchange email <email>
 
-### Set path to store RSS feed
-
+    # Set path to store RSS feed
     trackchange rss <path>
 
-### Add site
-
+    # Add site
     trackchange add <url>
 
+    # List sites
+    trackchange list
 
-## Usage (as library)
+    # Remove site
+    trackchange remove <pos>
 
-    TODO
+    # Probe
+    trackchange probe
+
+    # Install probe into crontab
+    trackchange install
+
+    # Uninstall probe from crontab
+    trackchange uninstall
 
 
 ## Contributing
