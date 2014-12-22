@@ -17,14 +17,15 @@ module Trackchange
     end
 
     def probe(site)
-      fname = site.sub(%r{https?://}, '').tr_s('/?&', '...')
+      url = site[:url]
+      fname = url.sub(%r{https?://}, '').tr_s('/?&', '...')
       site_path = File.expand_path(fname, '~/.trackchange')
-      lynx = "lynx -dump '#{site}' | uniq > #{site_path}.new"
+      lynx = "lynx -dump '#{url}' | uniq > #{site_path}.new"
       logger.debug "% #{lynx}"
       system lynx
 
       unless File.exist?(site_path) # new site
-        logger.warn "new site #{site}"
+        logger.warn "new site #{url}"
         FileUtils.mv("#{site_path}.new", site_path)
         return
       end
@@ -34,13 +35,23 @@ module Trackchange
       result = %x[ #{diff} ]
 
       if result.empty? # same old
-        logger.info "same old #{site}"
+        logger.info "same old #{url}"
         FileUtils.rm_f("#{site_path}.new")
         return
       end
 
+      if site[:threshold]
+        diffgrepwc = "#{diff} | grep '^[-+]:' | wc -l"
+        logger.debug "% #{diffgrepwc}"
+        degree = %x[ #{diffgrepwc} ]
+        if degree.to_i < site[:threshold].to_i
+          logger.warn 'change below threshold, skipping notification'
+          skip_notification = true
+        end
+      end
+
       # changed
-      logger.warn "changed #{site}"
+      logger.warn "changed #{url}"
       if pat = config.archive_pattern
         time = File.ctime(site_path).strftime(pat)
         logger.info "archived #{site_path}.#{time}"
@@ -48,13 +59,15 @@ module Trackchange
       end
       FileUtils.mv("#{site_path}.new", site_path)
 
+      return if skip_notification
+
       if email = config.email # send email
         logger.info "sending notification to #{email}"
         begin
           file = Tempfile.new('changetrack')
-          file.write "#{site}\n\n#{result}"
+          file.write "#{url}\n\n#{result}"
           file.close
-          mail = "cat #{file.path} | mail -s 'Change detected on #{site}' #{email}"
+          mail = "cat #{file.path} | mail -s 'Change detected on #{url}' #{email}"
           logger.debug mail
           system mail
         ensure

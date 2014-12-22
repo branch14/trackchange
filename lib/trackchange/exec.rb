@@ -41,17 +41,17 @@ module Trackchange
 
     def add
       config.sites ||= []
-      config.sites |= [ args.first ]
+      config.sites |= [ { url: args.first } ]
       store_config!
 
       # instant probe on add
-      config.sites = [ args.first ]
+      config.sites = [ { url: args.first } ]
       probe
     end
 
     def list
-      config.sites.each_with_index do |url, pos|
-        puts "% 4s %s" % [pos+1, url]
+      config.sites.each_with_index do |site, pos|
+        puts "% 4s %s" % [pos+1, site[:url]]
       end
     end
 
@@ -84,11 +84,26 @@ module Trackchange
       return @config if @config
       data = { version: VERSION }
       data = YAML.load(File.read(config_path)) if File.exist?(config_path)
+
+      # upgrade from <= 0.2.0
+      if v(data[:version]) <= v('0.2.0')
+        data[:version] = VERSION
+        data[:sites] = data[:sites].map do |site|
+          { url: site }
+        end
+        @config = OpenStruct.new(data)
+        store_config!
+      end
+
       @config = OpenStruct.new(data)
     end
 
     def store_config!
       File.open(config_path, 'w') { |f| f.print(YAML.dump(config.marshal_dump)) }
+    end
+
+    def v(version)
+      Gem::Version.new(version)
     end
 
   end
