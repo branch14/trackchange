@@ -43,6 +43,10 @@ module Trackchange
       config.sites ||= []
       config.sites |= [ args.first ]
       store_config!
+
+      # instant probe on add
+      config.sites = [ args.first ]
+      probe
     end
 
     def list
