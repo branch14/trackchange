@@ -1,7 +1,8 @@
 require 'logger'
 require 'fileutils'
 require 'tempfile'
-require 'rss'
+require 'rss/maker'
+require 'pry'
 
 module Trackchange
   class Probe < Struct.new(:config)
@@ -76,7 +77,26 @@ module Trackchange
       end
 
       if rss_path = config.rss_path # write rss
-        logger.info "update feed #{rss_path} (not realy, yet)"
+        logger.info "update feed #{rss_path}"
+        rss = RSS::Maker.make('1.0') do |m|
+          m.channel.title='Trackchange'; 
+          m.channel.about='Trackchange'; 
+          m.channel.link='http://localhost'; 
+          m.channel.description='Trackchanges of websites - see github.com/branch14/trackchange';
+          i = m.items.new_item;
+          i.title=
+          i.link=url
+          i.description="<pre>#{result}</pre>"
+          i.date=Time.now()
+        end
+        if (!File.writable?(config.rss_path)) 
+          logger.warn "'#{config.rss_path}' is not writable, skipping rss persistency"
+        else
+          file = File.new(config.rss_path,"w")
+          file.write rss
+          file.close
+       end
+
       end
     end
 
