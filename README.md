@@ -71,6 +71,18 @@ does not follow redirects, hence the version with curl.)
 
     curl -sL '%url%' | pandoc -t plain
 
+### rss_path
+
+...
+
+### feed_size
+
+...
+
+### log_level
+
+...
+
 
 ## Contributing
 

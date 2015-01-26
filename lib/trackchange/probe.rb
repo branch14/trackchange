@@ -75,8 +75,47 @@ module Trackchange
         end
       end
 
-      if rss_path = config.rss_path # write rss
-        logger.info "update feed #{rss_path} (not realy, yet)"
+      if file = File.expand_path(config.rss_path, ENV['HOME']) # write rss
+        logger.info "update rss feed '#{file}'"
+
+        out_rss = RSS::Maker.make('1.0') do |maker|
+          maker.channel.id = %x[ whoami ].chomp
+          maker.channel.author = %x[ whoami ].chomp
+          maker.channel.updated = Time.now.to_s
+          maker.channel.title = "Trackchange"
+          maker.channel.link = "http://github.com/brnach14/trackchange"
+          maker.channel.about = "Feed of detected changes"
+          maker.channel.description = "Feed of detected changes"
+
+          # new item
+          maker.items.new_item do |item|
+            item.link = "#{url}##{Time.now.to_i}"
+            item.title = "Change detected on #{url}"
+            item.date = Time.now.to_s
+            item.description = "<pre>#{result}</pre>"
+          end
+
+          # read rss, keepn old items
+          if File.exist?(file)
+            in_rss = RSS::Parser.parse(File.read(file))
+            in_rss.items.each_with_index do |in_item, index|
+              break if index > config.feed_size - 1
+              maker.items.new_item do |out_item|
+                out_item.link = in_item.link
+                out_item.title = in_item.title
+                out_item.date = in_item.date
+                out_item.description = in_item.description
+              end
+            end
+          end
+        end
+
+        # write rss
+        if File.exist?(file) and !File.writable?(file)
+          raise "'#{file}' is not writable, skipping rss persistency"
+        else
+          File.open(file, 'w') { |f| f.puts(out_rss) }
+        end
       end
     end
 
@@ -84,6 +123,9 @@ module Trackchange
       return @logger if @logger
       @logger = Logger.new(STDOUT).tap do |logger|
         logger.level = (config.log_level || 2).to_i
+        logger.formatter = proc do |severity, datetime, progname, msg|
+          "#{msg}\n"
+        end
       end
     end
 
