@@ -46,6 +46,32 @@ Or install it yourself as:
     trackchange uninstall
 
 
+## Configuration
+
+Trackchange creates its configuration file in `~/.trackchange/config.yml`.
+
+### fetch
+
+This is the command to fetch the tracked sites. `%url%` will be
+substituted by the requested site url.
+
+The default command is
+
+    lynx -dump '%url%' | uniq
+
+Here are some alternatives you might want to experiment
+with. (Unfortunately pandoc only works with http, not with https and
+does not follow redirects, hence the version with curl.)
+
+    lynx -dump '%url%' | uniq | sed -e "/References/,/\s+[0-9]+\. h/d"
+
+    pandoc '%url%' -t markdown
+
+    pandoc '%url%' -t plain
+
+    curl -sL '%url%' | pandoc -t plain
+
+
 ## Contributing
 
 1. Fork it

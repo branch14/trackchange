@@ -87,10 +87,18 @@ module Trackchange
 
       # upgrade from <= 0.2.0
       if v(data[:version]) <= v('0.2.0')
-        data[:version] = VERSION
+        data[:version] = '0.2.0'
         data[:sites] = data[:sites].map do |site|
           { url: site }
         end
+        @config = OpenStruct.new(data)
+        store_config!
+      end
+
+      # upgrade from 0.3.0 to 0.4.0
+      if v(data[:version]) < v('0.4.0')
+        data[:version ] = '0.4.0'
+        data[:fetch] = "lynx -dump '%url%' | uniq"
         @config = OpenStruct.new(data)
         store_config!
       end

@@ -20,9 +20,9 @@ module Trackchange
       url = site[:url]
       fname = url.sub(%r{https?://}, '').tr_s('/?&', '...')
       site_path = File.expand_path(fname, '~/.trackchange')
-      lynx = "lynx -dump '#{url}' | uniq > #{site_path}.new"
-      logger.debug "% #{lynx}"
-      system lynx
+      cmd = config.fetch.gsub('%url%', url) + "> #{site_path}.new"
+      logger.debug "% #{cmd}"
+      system cmd
 
       unless File.exist?(site_path) # new site
         logger.warn "new site #{url}"
