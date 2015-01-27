@@ -64,6 +64,8 @@ with. (Unfortunately pandoc only works with http, not with https and
 does not follow redirects, hence the version with curl.)
 
     lynx -dump '%url%' | uniq | sed -e "/References/,/\s+[0-9]+\. h/d"
+    
+    lynx -nolist -dump '%url%' | uniq
 
     pandoc '%url%' -t markdown
 
