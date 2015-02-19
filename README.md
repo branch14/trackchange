@@ -57,7 +57,7 @@ substituted by the requested site url.
 
 The default command is
 
-    lynx -dump '%url%' | uniq
+    lynx -nolist -dump '%url%' | uniq
 
 Here are some alternatives you might want to experiment
 with. (Unfortunately pandoc only works with http, not with https and
@@ -71,17 +71,44 @@ does not follow redirects, hence the version with curl.)
 
     curl -sL '%url%' | pandoc -t plain
 
-### rss_path
+    phantomjs %queryscript% '%url%' '%selector%'
+
+
+### rss_path (optional)
 
 ...
 
-### feed_size
+### feed_size (optional)
 
 ...
 
-### log_level
+### log_level (optional)
 
 ...
+
+### sites (mandatory)
+
+A list of sites, with the following properites.
+
+#### url (mandatory)
+
+The url of the site to be tracked.
+
+#### threshold (optional)
+
+If a threshold is given, no notification will be sent if the number of
+changed lines is below or equal the given vaule.
+
+#### selector (optional)
+
+If a selector is given, it will be used as a CSS3 selector to reduce
+the output to. The selector feature is only available if trackchange
+is configured to use phantomjs to fetch the content, i.e.
+
+    fetch: phantomjs %queryscript% '%url%' '%selector%'
+
+The query script will return plain text. If no selector is given, the
+query script will select the body tag by default.
 
 
 ## Contributing

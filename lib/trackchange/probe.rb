@@ -20,7 +20,15 @@ module Trackchange
       url = site[:url]
       fname = url.sub(%r{https?://}, '').tr_s('/?&', '...')
       site_path = File.expand_path(fname, '~/.trackchange')
-      cmd = config.fetch.gsub('%url%', url) + "> #{site_path}.new"
+
+      # build cmd
+      cmd = config.fetch  + "> #{site_path}.new"
+      substitutions = {
+        url: url,
+        queryscript: File.expand_path('../query.coffee', __FILE__),
+        selector: site[:selector]
+      }
+      substitutions.each { |key, value| cmd = cmd.gsub("%#{key}%", value.to_s) }
       logger.debug "% #{cmd}"
       system cmd
 

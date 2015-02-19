@@ -98,7 +98,7 @@ module Trackchange
       # upgrade from 0.3.0 to 0.4.0
       if v(data[:version]) < v('0.4.0')
         data[:version ] = '0.4.0'
-        data[:fetch] = "lynx -dump '%url%' | uniq"
+        data[:fetch] = "lynx -nolist -dump '%url%' | uniq"
         data[:feed_size] = 20
         @config = OpenStruct.new(data)
         store_config!

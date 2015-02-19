@@ -5,7 +5,6 @@ module Trackchange
 
       def check
         quit('no diff?') if %x[ which diff ].empty?
-        quit('no lynx?') if %x[ which lynx ].empty?
         quit('no mail?') if %x[ which mail ].empty?
       end
 
