@@ -9,11 +9,12 @@ address = sys.args[1]
 selector = sys.args[2] || 'body'
 
 query = (selector) ->
-  document.querySelector(selector).innerText
+  nodeList = document.querySelectorAll(selector)
+  nodeList.item(i).innerText for i in [0..nodeList.length-1]
 
 storePageAndExit = ->
   result = page.evaluate query, selector
-  console.log result
+  console.log result.join("\n")
   phantom.exit()
 
 page.open address, (status) ->
