@@ -46,13 +46,31 @@ module Trackchange
 
       # instant probe on add
       config.sites = [ { url: args.first } ]
-      probe
+      Probe.new(config).probe(config.sites.last)
     end
 
     def list
       config.sites.each_with_index do |site, pos|
         puts "% 4s %s" % [pos+1, site[:url]]
       end
+    end
+
+    # TODO refactor to make remove code duplication
+    def test
+      pos = args.first.to_i - 1
+      raise "Invalid position" if pos == -1
+      site = config.sites[pos]
+      url = site[:url]
+
+      cmd = config.fetch
+      substitutions = {
+        url: url,
+        queryscript: File.expand_path('../query.coffee', __FILE__),
+        selector: site[:selector]
+      }
+      substitutions.each { |key, value| cmd = cmd.gsub("%#{key}%", value.to_s) }
+      puts "% #{cmd}"
+      puts %x[#{cmd}]
     end
 
     def remove
