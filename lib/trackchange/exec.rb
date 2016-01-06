@@ -98,9 +98,16 @@ module Trackchange
       File.join(path, 'config.yml')
     end
 
+    def default_config
+      {
+        version: VERSION,
+        fetch: "lynx -nolist -dump '%url%' | uniq"
+      }
+    end
+
     def config
       return @config if @config
-      data = { version: VERSION }
+      data = default_config
       data = YAML.load(File.read(config_path)) if File.exist?(config_path)
 
       # upgrade from <= 0.2.0
@@ -116,7 +123,7 @@ module Trackchange
       # upgrade from 0.3.0 to 0.4.0
       if v(data[:version]) < v('0.4.0')
         data[:version ] = '0.4.0'
-        data[:fetch] = "lynx -nolist -dump '%url%' | uniq"
+        data[:fetch] = default_config[:fetch]
         data[:feed_size] = 20
         @config = OpenStruct.new(data)
         store_config!
