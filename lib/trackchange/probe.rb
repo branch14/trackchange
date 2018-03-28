@@ -3,6 +3,7 @@ require 'fileutils'
 require 'tempfile'
 require 'rss'
 require 'faraday'
+require 'json'
 
 module Trackchange
   class Probe < Struct.new(:config)
