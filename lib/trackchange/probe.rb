@@ -2,6 +2,7 @@ require 'logger'
 require 'fileutils'
 require 'tempfile'
 require 'rss'
+require 'faraday'
 
 module Trackchange
   class Probe < Struct.new(:config)
@@ -14,6 +15,20 @@ module Trackchange
 
     def run
       config.sites.each { |site| probe(site) }
+    end
+
+    def faraday
+      @faraday ||= Faraday.new do |f|
+        f.request :url_encoded
+        f.adapter Faraday.default_adapter
+      end
+    end
+
+    def slack_defaults
+      {
+        'username' => 'trackchange',
+        'icon_emoji' => ':fax:'
+      }
     end
 
     def probe(site)
@@ -68,6 +83,12 @@ module Trackchange
       FileUtils.mv("#{site_path}.new", site_path)
 
       return if skip_notification
+
+      if slack_hook = config.slack_hook
+        message = slack_defaults.merge(config.slack)
+        message.text = "#{url}\n\n#{result}"
+        faraday.post slack_hook, payload: JSON.unparse(message)
+      end
 
       if email = config.email # send email
         logger.info "sending notification to #{email}"

@@ -27,6 +27,9 @@ Or install it yourself as:
     # Set path to store RSS feed
     trackchange rss <path>
 
+    # Set slack hook
+    trackchange slack <url>
+
     # Add site
     trackchange add <url>
 
@@ -64,7 +67,7 @@ with. (Unfortunately pandoc only works with http, not with https and
 does not follow redirects, hence the version with curl.)
 
     lynx -dump '%url%' | uniq | sed -e "/References/,/\s+[0-9]+\. h/d"
-    
+
     lynx -nolist -dump '%url%' | uniq
 
     pandoc '%url%' -t markdown
@@ -75,6 +78,17 @@ does not follow redirects, hence the version with curl.)
 
     phantomjs %queryscript% '%url%' '%selector%'
 
+### slack_hook (optional)
+
+...
+
+### slack (optional)
+
+Allows to change the defaults...
+
+- channel
+- username
+- icon_emoji
 
 ### rss_path (optional)
 

@@ -39,6 +39,11 @@ module Trackchange
       store_config!
     end
 
+    def slack
+      config.slack_hook = args.first
+      store_config!
+    end
+
     def add
       config.sites ||= []
       config.sites |= [ { url: args.first } ]
