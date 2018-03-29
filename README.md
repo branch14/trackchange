@@ -84,11 +84,14 @@ does not follow redirects, hence the version with curl.)
 
 ### slack (optional)
 
-Allows to change the defaults...
+Allows to change the defaults. Example...
 
-- channel
-- username
-- icon_emoji
+```
+:slack:
+  channel: '@user'
+  username: 'change agent'
+  icon_emoji: ':squirrel:'
+```
 
 ### rss_path (optional)
 
