@@ -86,8 +86,8 @@ module Trackchange
       return if skip_notification
 
       if slack_hook = config.slack_hook
-        message = slack_defaults.merge(config.slack)
-        message.text = "#{url}\n\n#{result}"
+        message = slack_defaults.merge(config.slack.to_h)
+        message['text'] = "#{url}\n\n#{result}"
         faraday.post slack_hook, payload: JSON.unparse(message)
       end
 
